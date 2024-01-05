@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ingreso de Rendimientos</title>
+  <link rel="stylesheet" href="./CSS/stykesRendi.css">
+  <link rel="icon" href="./A-IMG/logo_prueba.png">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+  <img src="./A-IMG/logo_prueba.png" alt="Logo de la empresa" class="logo">
+    
+    <div class="return-container">
+      <a href="index.html" class="return-button"> <!-- Enlace a la página anterior -->
+        <i class="fas fa-arrow-left"></i>        
+      </a>
+    </div>
+
+    <div class="container">
+      <h1>Rendimientos</h1>
+      <form id="insert-form" method="post" action="./PHP/rendimientos.php">
+          <div class="form-group">
+              <label for="search-cedula">Número de Cédula:</label>
+              <input type="text" id="search-cedula" name="search-cedula"  minlength="10" maxlength="10" autofocus>
+          </div>  
+           <div class="form-group">
+        <label for="search-producto">Código Producto:</label>
+        <input type="text" id="search-producto" name="search-producto" maxlength="4" autofocus>
+        <span id="codigo-producto-help" style="color: red;"></span>
+    </div>
+    <div class="form-group">
+      <label for="insert-cantidad">Cantidad Producto:</label><br>
+      <input type="number" id="insert-cantidad" name="insert-cantidad" value="1" autofocus>
+  </div>
+          <button type="submit" class="manual-submit" id="manual-submit" onclick="submitFormManually()" style="display: none;">Guardar</button>
+      </form>
+      <div class="switch-container">
+          <label class="switch">
+              <input type="checkbox" id="mode-switch" onclick="toggleMode()">
+              <span class="slider"></span>
+          </label>
+          <span id="mode-text">Modo Manual</span>
+      </div>
+  </div>
+  
+
+  <div class="table-container">
+    <h2>Tabla de Rendimientos</h2>
+      <table id="rendimientos-table">
+        <thead>
+          <tr>
+            <th>ID Producto</th>
+            <th>Cantidad</th>
+            <th>Nombre del Producto</th>
+            <th>Nombre Trabajador</th>
+            <th>Apellido Trabajador</th>
+            <th>Fecha</th>
+            <th>Hora</th>
+          </tr>
+        </thead>
+        <tbody id="table-body">
+          <!-- Aquí se llenará la tabla con los datos -->
+      </tbody>
+      </table>
+      <button id="exportar-btn">Exportar a Excel</button>
+  </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
+<script src="./SCRIPTS/ScriptRendimiento.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      const codigoProductoInput = document.getElementById('search-producto');
+      codigoProductoInput.addEventListener('input', validarCodigoProducto);
+  });
+
+  function validarCodigoProducto() {
+      const codigoProductoInput = document.getElementById('search-producto');
+      const codigoProductoHelp = document.getElementById('codigo-producto-help');
+      const codigoProductoValue = codigoProductoInput.value;
+
+      if (codigoProductoValue.length < 4) {
+          codigoProductoHelp.textContent = 'El código del producto debe tener al menos 4 caracteres.';
+      } else {
+          codigoProductoHelp.textContent = '';
+      }
+  }
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+            const manualSubmitButton = document.getElementById('manual-submit');
+
+            // Función para enviar el formulario manualmente
+            function submitFormManually() {
+                document.getElementById('insert-form').submit();
+            }
+
+            // Mostrar el botón de envío manual
+            manualSubmitButton.style.display = 'block';
+        });
+</script>
+
+
+</body>
+</html>

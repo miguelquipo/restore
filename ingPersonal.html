@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ingreso de Personal</title>
+  <link rel="icon" href="./A-IMG/logo_prueba.png">
+  <link rel="stylesheet" href="./CSS/stylesIngTrab.css">
+  <!-- Incluye Font Awesome -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+
+  <img src="./A-IMG/logo_prueba.png" alt="Logo de la empresa" class="logo">
+    
+  <div class="menu">
+      <!-- Resto de los botones aquí -->
+    </div>
+    <div class="return-container">
+      <a href="index.html" class="return-button"> <!-- Enlace a la página anterior -->
+        <i class="fas fa-arrow-left"></i>
+        
+      </a>
+    </div>
+  </div>
+
+  <main>
+    <div class="container">
+      <h1>Ingreso de Personal</h1>
+      <form id="personal-form" action="./PHP/insercionTrab.php" method="post" onsubmit="return validarFormulario()">
+        <div class="form-group">
+          <label for="nombre">Nombre:</label>
+          <input type="text" id="nombre" name="nombre" placeholder="Ingrese su nombre" required>
+        </div>
+        <div class="form-group">
+          <label for="apellido">Apellido:</label>
+          <input type="text" id="apellido" name="apellido" placeholder="Ingrese su apellido" required>
+        </div>
+        <div class="form-group">
+          <label for="cedula">Cédula:</label>
+          <input type="text" id="cedula" name="cedula" minlength="10" maxlength="10" placeholder="Ingrese su número de cédula" required>
+          <small id="cedulaHelp" style="color: red;"></small>
+        </div>
+        <button type="submit">Guardar</button>
+      </form>
+    </div>
+  </main>
+
+  <div class="table-container">
+    <h2>Personal</h2>
+    <table id="trabajadores-table">
+      <thead>
+        <tr>
+          <th>ID Trabajador</th>
+          <th>Nombre</th>
+          <th>Apellido</th>
+          <th>Cédula</th>
+        </tr>
+      </thead>
+      <tbody id="table-body">
+        <!-- Aquí se llenará la tabla con los datos -->
+    </tbody>
+    </table>
+    <div id="exportar-personal-container">
+      <button id="exportar-personal-btn">Exportar a Excel</button>
+  </div>
+  </div>
+  <script>
+  function validarFormulario() {
+    var cedulaInput = document.getElementById('cedula');
+    var cedulaHelp = document.getElementById('cedulaHelp');
+    var cedulaValue = cedulaInput.value;
+
+    if (cedulaValue.length !== 10 || isNaN(cedulaValue)) {
+      cedulaHelp.textContent = 'La cédula debe tener 10 dígitos numéricos.';
+      return false;
+    } else {
+      cedulaHelp.textContent = '';
+      return true;
+    }
+  }</script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+    // Obtener datos iniciales
+    obtenerDatosPersonal();
+
+    // Agregar evento al botón de exportación
+    const exportarPersonalBtn = document.getElementById('exportar-personal-btn');
+    exportarPersonalBtn.addEventListener('click', function () {
+        exportarExcel('table-body');
+    });
+
+    // Actualizar los datos cada cierto intervalo (por ejemplo, cada 5 minutos)
+    setInterval(function () {
+        obtenerDatosPersonal();
+    }, 300000); // 300000 milisegundos = 5 minutos
+});
+
+function obtenerDatosPersonal() {
+    let url = './PHP/obtener_personal.php';
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            mostrarDatosPersonalEnTabla(data);
+        })
+        .catch(error => {
+            console.error('Error al obtener los datos:', error);
+        });
+}
+
+function mostrarDatosPersonalEnTabla(data) {
+    const tableBody = document.getElementById('table-body');
+
+    // Limpiamos cualquier contenido previo en la tabla
+    tableBody.innerHTML = '';
+
+    // Iteramos sobre los datos y creamos las filas de la tabla
+    data.forEach(trabajador => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${trabajador.id_trabajador}</td>
+            <td>${trabajador.nombre}</td>
+            <td>${trabajador.apellido}</td>
+            <td>${trabajador.cedula}</td>
+        `;
+        tableBody.appendChild(row);
+    });
+}
+
+// Función para exportar la tabla a Excel
+function exportarExcel(tableId) {
+    const ws = XLSX.utils.table_to_sheet(document.getElementById(tableId));
+    // Guardar el archivo
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Personal');
+    XLSX.writeFile(wb, 'DatosPersonal.xlsx');
+}
+
+  </script> 
+</body>
+</html>
